@@ -1,0 +1,40 @@
+.Travel {
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  color: white;
+  gap: 10px;
+}
+
+.Travel-enter {
+  opacity: 0;
+}
+.Travel-enter-active {
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+}
+.Travel-exit {
+  opacity: 1;
+}
+.Travel-exit-active {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.Travel .img_section {
+  width: 70%;
+}
+
+.Travel .img_section > img {
+  width: 100%;
+}
+
+.Travel .content_section > ul > li {
+  color: black;
+}
