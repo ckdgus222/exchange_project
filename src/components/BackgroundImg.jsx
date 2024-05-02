@@ -6,6 +6,12 @@ import background3 from "./../assets/background3.png";
 import background4 from "./../assets/background4.png";
 import background5 from "./../assets/background5.png";
 
+
+
+
+
+
+
 const BackgroundImg = () => {
   const images = useMemo(() => [background1, background2, background3, background4, background5], []);
 
@@ -30,7 +36,7 @@ const BackgroundImg = () => {
     }, 4000);
 
     return () => clearInterval(imgRandom);
-  }, [images,prevImg]);
+  }, [images, prevImg]);
 
   return (
     <div className="background-container">
