@@ -1,29 +1,37 @@
 import "./Exchange.css";
 import Button from "./Button";
 import Travel from "./Travel";
+import { moneyText, TimeZones } from "../util/consttent";
 import { exchangeAPI } from "../util/exchangeAPI";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetchs";
 
-const moneyText = {
-  "JPY(100)": "엔화",
-  GBP: "파운드",
-  THB: "바트",
-  USD: "달러",
-  CNH: "위안",
-};
-
-
-const mainData = exchangeAPI();
-console.log(mainData);
+const data_API = exchangeAPI();
 
 const Exchange = ({ changeState }) => {
   const { change, setChange, selectedCurrency, setSelectedCurrency } = changeState;
-
-  // const [wonText, setWonText] = useState(moneyText);
+  const [wonText, setWonText] = useState(moneyText);
   const [krwAmount, setKrwAmount] = useState(0);
-  const data = useFetch(exchangeAPI());
-  console.log(data);
+  const [currentTime, setCurrentTime] = useState("");
+
+  const data = useFetch(data_API);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const timeZone = TimeZones[selectedCurrency];
+      const time = new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZone: timeZone,
+        hour12: false,
+      }).format(new Date());
+      setCurrentTime(time);
+    }, 1000);
+    return () => clearInterval(timer.toLocaleString());
+  }, [selectedCurrency]);
+  
+
 
   const getRate = () => {
     if (data) {
@@ -44,7 +52,7 @@ const Exchange = ({ changeState }) => {
   };
 
   const list = (key) => {
-    let values = moneyText[key];
+    let values = wonText[key];
     return values;
   };
 
@@ -69,6 +77,9 @@ const Exchange = ({ changeState }) => {
             <option value="USD">미국(USD)</option>
             <option value="CNH">중국(CNH)</option>
           </select>
+        </div>
+        <div>
+          <p>현재 시간: {currentTime}</p>
         </div>
         <div className="Exchange-Rate">
           <p>환율</p>

@@ -15,7 +15,6 @@ const Travel = ({ changeState, getSelect }) => {
   const [imgIndex, setImgIndex] = useState(0);
   const [imgFade, setImgFade] = useState(true);
   const [userData, setUserData] = useState(conversation);
-  const [hash, setHash] = useState(hashtag);
   const currentImages = images[getSelect];
 
   const nextSlide = () => {
@@ -33,7 +32,7 @@ const Travel = ({ changeState, getSelect }) => {
 
     return () => clearInterval(nextImg);
   }, [getSelect, currentImages.length]);
-  
+
   return (
     <CSSTransition in={!changeState} timeout={1500} classNames={"Travel"} unmountOnExit>
       <div className="Travel">
@@ -46,7 +45,7 @@ const Travel = ({ changeState, getSelect }) => {
           </div>
           <Button className="right_button" onClick={nextSlide} text=">" />
           <div className="hashtag">
-            {hash[getSelect].map((item, i) => (
+            {hashtag[getSelect].map((item, i) => (
               <Hashtag key={i} text={item} />
             ))}
           </div>

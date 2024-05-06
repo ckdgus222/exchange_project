@@ -6,3 +6,18 @@ export const images = {
    GBP: ["/uk.jpg", "/uk1.jpg", "/uk2.jpg", "/uk3.jpg", "/uk4.jpg"],
  };
  
+export const moneyText = {
+  "JPY(100)": "엔화",
+  GBP: "파운드",
+  THB: "바트",
+  USD: "달러",
+  CNH: "위안",
+};
+
+export const TimeZones = {
+  "JPY(100)" : "Asia/Tokyo",
+  GBP: "Europe/London",
+  THB: "Asia/Bangkok",
+  USD: "America/New_York",
+  CNH: "Asia/Shanghai",
+}

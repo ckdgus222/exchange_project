@@ -2,11 +2,11 @@
   display: flex;
   margin-bottom: 10px;
   justify-content: space-between;
-
 }
-.comment_container .comment_one{
-   line-height: 20px;
+.comment_container .comment_one {
+  line-height: 20px;
+  font-size: 20px;
 }
-.comment_container .comment_one > p{
-   cursor: pointer;
+.comment_container .comment_one > p {
+  cursor: pointer;
 }
