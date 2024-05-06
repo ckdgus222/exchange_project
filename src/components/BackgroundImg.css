@@ -1,25 +1,26 @@
-.background-container{
-   position: relative;
-   height: 100vh;
-   width: 100vw;
-   overflow: hidden;
-   z-index: -1;
+.background-container {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  z-index: -1;
+  filter: brightness(80%);
 }
 
-.background{
-   position: absolute;
-   top: 0;
-   left: 0;
-   height: 100vh;
-   width: 100vw;
-   background-size: cover;
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-size: cover;
 }
 
 .fade-in {
-   opacity: 1;
-   transition: opacity 1s ease-in-out;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
 }
-.fade-out{
-   opacity: 0;
-   transition: opacity 1s ease-in-out;
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
 }

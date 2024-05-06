@@ -1,16 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, memo } from "react";
 import "./BackgroundImg.css";
 import background1 from "./../assets/background1.png";
 import background2 from "./../assets/background2.png";
 import background3 from "./../assets/background3.png";
 import background4 from "./../assets/background4.png";
 import background5 from "./../assets/background5.png";
-
-
-
-
-
-
 
 const BackgroundImg = () => {
   const images = useMemo(() => [background1, background2, background3, background4, background5], []);
@@ -36,7 +30,7 @@ const BackgroundImg = () => {
     }, 4000);
 
     return () => clearInterval(imgRandom);
-  }, [images, prevImg]);
+  }, [images]);
 
   return (
     <div className="background-container">
@@ -45,4 +39,4 @@ const BackgroundImg = () => {
   );
 };
 
-export default BackgroundImg;
+export default memo(BackgroundImg);

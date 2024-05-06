@@ -1,8 +1,7 @@
 import "./Exchange.css";
 import Button from "./Button";
 import Travel from "./Travel";
-
-import axios from "axios";
+import { exchangeAPI } from "../util/exchangeAPI";
 import { useState } from "react";
 import useFetch from "../hooks/useFetchs";
 
@@ -14,13 +13,17 @@ const moneyText = {
   CNH: "위안",
 };
 
+
+const mainData = exchangeAPI();
+console.log(mainData);
+
 const Exchange = ({ changeState }) => {
-  const { change, setChange,selectedCurrency,setSelectedCurrency } = changeState;
+  const { change, setChange, selectedCurrency, setSelectedCurrency } = changeState;
 
-  const [wonText, setWonText] = useState(moneyText);
+  // const [wonText, setWonText] = useState(moneyText);
   const [krwAmount, setKrwAmount] = useState(0);
-  const data = useFetch();
-
+  const data = useFetch(exchangeAPI());
+  console.log(data);
 
   const getRate = () => {
     if (data) {
@@ -33,6 +36,7 @@ const Exchange = ({ changeState }) => {
       return 0;
     }
   };
+
   const covertAmount = () => {
     const rate = getRate();
     const converted = krwAmount > 0 && rate ? krwAmount / rate : 0;
@@ -40,8 +44,7 @@ const Exchange = ({ changeState }) => {
   };
 
   const list = (key) => {
-    let copy = { ...wonText };
-    let values = copy[key];
+    let values = moneyText[key];
     return values;
   };
 
@@ -55,7 +58,7 @@ const Exchange = ({ changeState }) => {
 
   return (
     <div className="exchange">
-      <p>어디로 여행 가실건가요?</p>
+      <p className="main_P">어디로 여행 가실건가요?</p>
       <div className="content-box">
         <div className="money-change">
           <p>나라 선택</p>
@@ -82,7 +85,7 @@ const Exchange = ({ changeState }) => {
           <Button onClick={() => setChange(!change)} className="button-style" text="여행지 추천" />
         </div>
       </div>
-      {change ? null : <Travel getSelectds={selectedCurrency} />}
+      {change ? null : <Travel />}
     </div>
   );
 };
