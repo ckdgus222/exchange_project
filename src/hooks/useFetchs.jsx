@@ -7,7 +7,7 @@ const useFetch = (url) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`https://travel-exchange.vercel.app${url}`);
+        const response = await axios.get(`https://travel-exchange22.vercel.app${url}`);
         setData(response.data);
       } catch (error) {
         console.error("Error:", error);
