@@ -18,7 +18,7 @@ const Exchange = ({ changeState }) => {
   const [krwAmount, setKrwAmount] = useState(0);
   const [currentTime, setCurrentTime] = useState("");
 
-  const data = useFetch(import.meta.env.VITE_API_URL);
+  const data = useFetch("");
 
   useEffect(() => {
     const timer = setInterval(() => {

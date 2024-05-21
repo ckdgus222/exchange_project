@@ -7,19 +7,14 @@ export default async function handler(req, res) {
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, "0");
         const day = String(now.getDate()).padStart(2, "0");
-        
+
     const API_KEY = import.meta.env.VITE_API_KEY;
     const searchDate = String(`${year}${month}${day}`);
     const dataType = String("AP01");
     const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${API_KEY}&searchdate=${searchDate}&data=${dataType}`;
 
     try {
-        // 외부 API 호출
-        const apiResponse = await fetch(apiUrl, {
-            headers: {
-                // 필요한 경우 추가 헤더를 여기에 삽입
-            }
-        });
+        const apiResponse = await fetch(apiUrl);
         const data = await apiResponse.json();
 
         // CORS 헤더 설정
