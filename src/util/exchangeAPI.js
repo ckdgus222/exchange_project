@@ -8,7 +8,7 @@ export const exchangeAPI = () => {
   const API_SEARCHDATE = `${year}${month}${day}`;
   const dataType = String("AP01");
 
-  const DATA_API = `/api?authkey=${API_KEY}&searchdate=${API_SEARCHDATE}&data=${dataType}`;
+  const DATA_API = `https://www.koreaexim.go.kr/api?authkey=${API_KEY}&searchdate=${API_SEARCHDATE}&data=${dataType}`;
 
   return DATA_API;
 };
