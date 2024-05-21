@@ -6,11 +6,7 @@ import { exchangeAPI } from "../util/exchangeAPI";
 import { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetchs";
 
-
-const data_API = exchangeAPI();
-
-
-
+const apiUrl = `/api/proxy?authkey=${import.meta.env.VITE_API_KEY}&searchdate=20240503&data=AP01`;
 
 const Exchange = ({ changeState }) => {
   const { change, setChange, selectedCurrency, setSelectedCurrency } = changeState;
@@ -18,7 +14,7 @@ const Exchange = ({ changeState }) => {
   const [krwAmount, setKrwAmount] = useState(0);
   const [currentTime, setCurrentTime] = useState("");
 
-  const data = useFetch(data_API);
+  const data = useFetch(apiUrl);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -34,8 +30,6 @@ const Exchange = ({ changeState }) => {
     }, 1000);
     return () => clearInterval(timer.toLocaleString());
   }, [selectedCurrency]);
-  
-
 
   const getRate = () => {
     if (data) {
