@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const vercel = "https://travel-exchange-fc97y9irc-cchs-projects-be903c00.vercel.app/"
+const vercel = "https://travel-exchange-fc97y9irc-cchs-projects-be903c00.vercel.app"
 
 const useFetch = (url) => {
   const [data, setData] = useState([]);
