@@ -3,9 +3,14 @@ import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
     // 외부 API 엔드포인트 URL 구성
-    const API_KEY = req.query.authkey;
-    const searchDate = req.query.searchdate;
-    const dataType = req.query.data;
+        const now = new Date('2024-05-03');
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        
+    const API_KEY = import.meta.env.VITE_API_KEY;
+    const searchDate = String(`${year}${month}${day}`);
+    const dataType = String("AP01");
     const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${API_KEY}&searchdate=${searchDate}&data=${dataType}`;
 
     try {
