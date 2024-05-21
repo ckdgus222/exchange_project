@@ -6,7 +6,9 @@ import { exchangeAPI } from "../util/exchangeAPI";
 import { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetchs";
 
+
 const data_API = exchangeAPI();
+console.log(data_API)
 
 
 const Exchange = ({ changeState }) => {
