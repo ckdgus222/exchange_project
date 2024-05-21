@@ -18,7 +18,7 @@ const Exchange = ({ changeState }) => {
   const [krwAmount, setKrwAmount] = useState(0);
   const [currentTime, setCurrentTime] = useState("");
 
-  const data = useFetch("");
+  const data = useFetch(data_API);
 
   useEffect(() => {
     const timer = setInterval(() => {
