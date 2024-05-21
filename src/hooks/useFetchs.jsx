@@ -1,13 +1,15 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+const vercel = "https://travel-exchange.vercel.app/"
+
 const useFetch = (url) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(url);
+        const response = await axios.get(`${vercel}${url}`);
         setData(response.data);
       } catch (error) {
         console.error("Error:", error);
