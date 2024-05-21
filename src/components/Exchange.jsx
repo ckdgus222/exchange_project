@@ -13,8 +13,8 @@ const Exchange = ({ changeState }) => {
   const [wonText, setWonText] = useState(moneyText);
   const [krwAmount, setKrwAmount] = useState(0);
   const [currentTime, setCurrentTime] = useState("");
-  const apiUrl = `${import.meta.env.VITE_API_URL}?authkey=${import.meta.env.VITE_API_KEY}&searchdate=20240503&data=AP01`
-  const data = useFetch(import.meta.env.VITE_API_URL);
+  const apiUrl = `/api/proxy?authkey=${import.meta.env.VITE_API_KEY}&searchdate=20240503&data=AP01`
+  const data = useFetch(apiUrl);
   
 
   useEffect(() => {
