@@ -9,13 +9,14 @@ export default async function handler(req, res) {
 
   const { authkey, searchdate, data } = req.query;
   
+  
   // 필수 파라미터 검증
   if (!authkey || !searchdate || !data) {
     console.error('Missing required query parameters: ', req.query);
     return res.status(400).json({ message: 'Missing required query parameters.' });
   }
   
-  const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
+  const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=AP01`;
 
   try {
     console.log(`Requesting URL: ${apiUrl}`);
