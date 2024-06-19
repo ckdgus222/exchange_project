@@ -10,7 +10,7 @@ const useFetch = (url) => {
         const response = await axios.get(url);
         setData(response.data);
       } catch (error) {
-        console.error("Error:", error);
+        console.error("API Error: ", error.response || error.message);
       }
     };
     if (url) {

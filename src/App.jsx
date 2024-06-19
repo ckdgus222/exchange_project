@@ -14,7 +14,13 @@ function App() {
   return (
     <div className="app-container">
       <BackgroundImg />
-      <TransitionGroup>{change ? <Exchange changeState={{ change, setChange ,selectedCurrency,setSelectedCurrency }} /> : <Travel changeState={change} getSelect={selectedCurrency} />}</TransitionGroup>
+      <TransitionGroup>
+        {change ? (
+          <Exchange changeState={{ change, setChange, selectedCurrency, setSelectedCurrency }} />
+        ) : (
+          <Travel changeState={change} getSelect={selectedCurrency} />
+        )}
+      </TransitionGroup>
     </div>
   );
 }
