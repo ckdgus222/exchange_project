@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import https from 'https';
 
 export default async function handler(req, res) {
   const { authkey, searchdate, data } = req.query;
@@ -9,8 +10,12 @@ export default async function handler(req, res) {
 
   const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
 
+  const agent = new https.Agent({
+    rejectUnauthorized: false
+  });
+
   try {
-    const apiResponse = await fetch(apiUrl);
+    const apiResponse = await fetch(apiUrl, { agent });
     if (!apiResponse.ok) {
       throw new Error(`API responded with status ${apiResponse.status}`);
     }
