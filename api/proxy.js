@@ -15,9 +15,20 @@ export default async function handler(req, res) {
     rejectUnauthorized: false
   });
 
+  // 리디렉션 정책을 'manual'로 설정하여 리디렉션을 수동으로 처리
+  const fetchOptions = {
+    agent,
+    redirect: 'manual' // 리디렉션을 자동으로 따르지 않음
+  };
+
   try {
-    const apiResponse = await fetch(apiUrl, { agent });
+    const apiResponse = await fetch(apiUrl, fetchOptions);
     if (!apiResponse.ok) {
+      // API 상태 코드에 따라 적절한 에러 메시지 처리
+      if (apiResponse.status === 301 || apiResponse.status === 302) {
+        console.log('Redirected:', apiResponse.headers.get('location'));
+        return res.status(200).json({ message: 'Redirected', location: apiResponse.headers.get('location') });
+      }
       throw new Error(`API responded with status ${apiResponse.status}`);
     }
 
