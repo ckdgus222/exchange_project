@@ -26,7 +26,9 @@ export default async function handler(req, res) {
       // 리디렉션 발생 시
       const locationHeader = apiResponse.headers.get('location');
       console.log(`Redirected to: ${locationHeader}`);
-      return res.redirect(locationHeader);  // 필요한 경우 클라이언트를 리디렉션
+      res.writeHead(302, { 'Location': locationHeader });  // 클라이언트에 리디렉션 주소를 직접 설정
+      res.end();
+      return;
     }
 
     if (!apiResponse.ok) {
@@ -37,6 +39,6 @@ export default async function handler(req, res) {
     res.status(200).json(responseData);
   } catch (error) {
     console.error('Error fetching data:', error);
-    res.status(500).json({ message: 'Unable to fetch data', error: error.toString() });
+    res.status(500).json({ message: 'Unable to fetch data', error: error.message });  // 오류 메시지의 형식을 개선
   }
 }
