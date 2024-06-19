@@ -1,30 +1,32 @@
 import axios from 'axios';
 import https from 'https';
 
+
 export default async function handler(req, res) {
   const { authkey, searchdate, data } = req.query;
-
   if (!authkey || !searchdate || !data) {
     return res.status(400).json({ message: 'Missing required query parameters.' });
   }
 
   const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
   const agent = new https.Agent({
-    rejectUnauthorized: false  // 임시로 SSL 검증 비활성화
+    rejectUnauthorized: false // 보안 리스크가 있으니, 실제 운영 환경에서는 신중하게 사용
   });
 
   try {
     let response = await axios.get(apiUrl, {
       httpsAgent: agent,
-      maxRedirects: 0
+      maxRedirects: 0 // 리디렉션 자동 처리 비활성화
     });
 
+    // 리디렉션 수동 처리
     while (response.status === 302 && response.headers.location) {
-      const location = response.headers.location;
-      if (location === apiUrl) break;  // 같은 위치 리디렉션 방지
-
-      console.log('Redirect location:', location);
-      response = await axios.get(location, { httpsAgent: agent, maxRedirects: 0 });
+      if (response.headers.location === apiUrl) {
+        // 무한 리디렉션 방지
+        break;
+      }
+      console.log('Redirect location:', response.headers.location);
+      response = await axios.get(response.headers.location, { httpsAgent: agent, maxRedirects: 0 });
     }
 
     if (response.status !== 200) {
