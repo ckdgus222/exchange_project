@@ -2,8 +2,9 @@
   "version": 2,
   "routes": [
     {
-      "src": "/api/proxy",
-      "dest": "/api/proxy.js"
+      "src": "/api/proxy(.*)",
+      "dest": "/api/proxy.js$1",
+      "methods": ["GET"]
     },
     { "handle": "filesystem" },
     { "src": "/.*", "dest": "/index.html" }
