@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import https from 'https';
 
 export default async function handler(req, res) {
   const { authkey, searchdate, data } = req.query;
@@ -9,20 +10,22 @@ export default async function handler(req, res) {
 
   const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
 
-  try {
-    const response = await fetch(apiUrl);
-    const data = await response.json();
+  const agent = new https.Agent({
+    rejectUnauthorized: false,
+    secureProtocol: 'TLSv1_2_method'
+  });
 
-    if (!response.ok) {
-      throw new Error(`API responded with status ${response.status}`);
+  try {
+    const apiResponse = await fetch(apiUrl, { agent });
+    if (!apiResponse.ok) {
+      throw new Error(`API responded with status ${apiResponse.status}`);
     }
 
-    res.status(200).json(data);
+    const responseData = await apiResponse.json();
+    res.status(200).json(responseData);
   } catch (error) {
     console.error('Error fetching data:', error);
-    res.status(500).json({
-      message: 'Unable to fetch data',
-      error: error.message
-    });
+    res.status(500).json({ message: 'Unable to fetch data', error: error.toString() });
   }
 }
+
