@@ -18,14 +18,22 @@ export default async function handler(req, res) {
       maxRedirects: 0 // 리디렉션 자동 처리 비활성화
     });
 
-    // 리디렉션 수동 처리
-    while (response.status === 302 && response.headers.location) {
-      if (response.headers.location === apiUrl) {
-        // 무한 리디렉션 방지
-        break;
+    // 리디렉션 수동 처리 로직
+    if (response.status === 302) {
+      let redirectURL = response.headers.location;
+      const visited = new Set();  // 방문한 URL 추적
+
+      while (redirectURL && !visited.has(redirectURL)) {
+        visited.add(redirectURL);
+        console.log('Redirect location:', redirectURL);
+
+        response = await axios.get(redirectURL, { httpsAgent: agent, maxRedirects: 0 });
+        redirectURL = response.status === 302 ? response.headers.location : null;
       }
-      console.log('Redirect location:', response.headers.location);
-      response = await axios.get(response.headers.location, { httpsAgent: agent, maxRedirects: 0 });
+
+      if (visited.has(redirectURL)) {
+        throw new Error('Detected redirect loop');  // 리디렉션 루프 감지
+      }
     }
 
     if (response.status !== 200) {
