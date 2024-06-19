@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import axios from 'axios';
 import https from 'https';
 
 export default async function handler(req, res) {
@@ -9,20 +9,18 @@ export default async function handler(req, res) {
   }
 
   const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
-  
-  // HTTPS agent 설정을 변경하여 SSL 검증을 비활성화
+
   const agent = new https.Agent({
-    rejectUnauthorized: false // SSL 인증서 검증 비활성화
+    rejectUnauthorized: false
   });
 
   try {
-    const apiResponse = await fetch(apiUrl, { agent });
-    if (!apiResponse.ok) {
-      throw new Error(`API responded with status ${apiResponse.status}`);
-    }
+    const response = await axios.get(apiUrl, {
+      httpsAgent: agent,
+      maxRedirects: 5  // 리디렉션 최대 횟수 설정
+    });
 
-    const responseData = await apiResponse.json();
-    res.status(200).json(responseData);
+    res.status(200).json(response.data);
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ message: 'Unable to fetch data', error: error.message });
