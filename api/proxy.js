@@ -38,6 +38,17 @@ export default async function handler(req, res) {
     res.status(200).json(responseData);
   } catch (error) {
     console.error('Error fetching data:', error);
+    if (error.response) {
+      // 요청이 이루어졌으나 서버가 2xx 이외의 상태 코드로 응답
+      console.error('API Response Status:', error.response.status);
+      console.error('API Response Data:', error.response.data);
+    } else if (error.request) {
+      // 요청이 이루어 졌으나 응답을 받지 못함
+      console.error('No response received:', error.request);
+    } else {
+      // 요청 생성 중 문제 발생
+      console.error('Error setting up request:', error.message);
+    }
     res.status(500).json({ message: 'Unable to fetch data', error: error.toString() });
   }
 }
