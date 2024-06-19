@@ -11,32 +11,21 @@ export default async function handler(req, res) {
   
   // 필수 파라미터 검증
   if (!authkey || !searchdate || !data) {
-    console.error('Missing required query parameters.');
+    console.error('Missing required query parameters: ', req.query);
     return res.status(400).json({ message: 'Missing required query parameters.' });
   }
-
+  
   const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
-
-  // SSL 검사를 비활성화하는 에이전트 생성
-  const agent = new https.Agent({
-    rejectUnauthorized: false
-  });
 
   try {
     console.log(`Requesting URL: ${apiUrl}`);
 
-    // fetch 요청에서 redirect 옵션 추가
-    const apiResponse = await fetch(apiUrl, {
-      agent,
-      redirect: 'follow', // 리디렉션을 자동으로 따름
-      maxRedirects: 5    // 최대 리디렉션 횟수 설정
-    });
-
+    const apiResponse = await fetch(apiUrl);
     console.log(`API Response Status: ${apiResponse.status}`);
-
     if (!apiResponse.ok) {
-      console.error(`API responded with status ${apiResponse.status}, StatusText: ${apiResponse.statusText}`);
-      throw new Error(`API responded with status ${apiResponse.status}`);
+      const errorBody = await apiResponse.text();
+      console.error('API Response Error:', errorBody);
+      throw new Error(`API responded with status ${apiResponse.status}: ${errorBody}`);
     }
 
     const responseData = await apiResponse.json();
