@@ -10,7 +10,7 @@ export default defineConfig({
       '/api': {
         target: 'https://www.koreaexim.go.kr',
         changeOrigin: true,
-        secure: false,  // SSL 인증서 검증 비활성화 (이미 잘 설정되어 있음)
+        secure: false,  // SSL 인증서 검증 비활성화 
         rewrite: (path) => path.replace(/^\/api\/proxy/, '/site/program/financial/exchangeJSON')
       },
     },
