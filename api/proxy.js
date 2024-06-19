@@ -3,43 +3,47 @@ import https from 'https';
 
 export default async function handler(req, res) {
   const { authkey, searchdate, data } = req.query;
+
   if (!authkey || !searchdate || !data) {
     return res.status(400).json({ message: 'Missing required query parameters.' });
   }
 
+  // API URL 구성
   const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
+  
+  // HTTPS 에이전트 구성
   const agent = new https.Agent({
-    rejectUnauthorized: false // 보안 리스크가 있으니, 실제 운영 환경에서는 신중하게 사용
+    rejectUnauthorized: true  // 인증서 검증 활성화
   });
 
   try {
+    // 리디렉션 비활성화 및 첫 번째 요청 시도
     let response = await axios.get(apiUrl, {
       httpsAgent: agent,
-      maxRedirects: 0 // 리디렉션 자동 처리 비활성화
+      maxRedirects: 0  // 리디렉션 비활성화
     });
 
     // 리디렉션 수동 처리 로직
-    if (response.status === 302) {
-      let redirectURL = response.headers.location;
-      const visited = new Set();  // 방문한 URL 추적
+    while (response.status === 302 && response.headers.location) {
+      const location = response.headers.location;
+      console.log('Redirecting to:', location);
 
-      while (redirectURL && !visited.has(redirectURL)) {
-        visited.add(redirectURL);
-        console.log('Redirect location:', redirectURL);
+      // 같은 위치로의 리디렉션을 피하기 위해 검사
+      if (location === apiUrl) break;
 
-        response = await axios.get(redirectURL, { httpsAgent: agent, maxRedirects: 0 });
-        redirectURL = response.status === 302 ? response.headers.location : null;
-      }
-
-      if (visited.has(redirectURL)) {
-        throw new Error('Detected redirect loop');  // 리디렉션 루프 감지
-      }
+      // 리디렉션 따라가기
+      response = await axios.get(location, {
+        httpsAgent: agent,
+        maxRedirects: 0  // 추가 리디렉션 비활성화
+      });
     }
 
+    // 최종 응답 검사
     if (response.status !== 200) {
-      throw new Error(`API responded with status ${response.status}: ${response.statusText}`);
+      throw new Error(`API responded with status ${response.status}`);
     }
 
+    // 데이터 반환
     res.status(200).json(response.data);
   } catch (error) {
     console.error('Error fetching data:', error);
