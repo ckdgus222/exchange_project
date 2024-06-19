@@ -16,7 +16,7 @@ export default defineConfig({
         target: 'https://www.koreaexim.go.kr',
         changeOrigin: true,
         secure: false,  // SSL 인증서 검증 비활성화
-        rewrite: (path) => path.replace(/^\/api\/proxy/, '/site/program/financial/exchangeJSON'),
+        rewrite: path => '/site/program/financial/exchangeJSON' + path.replace(/^\/api\/proxy/, ''),
         agent,  // HTTPS 에이전트 추가
       },
     },

@@ -11,19 +11,25 @@ export default async function handler(req, res) {
   const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
 
   const agent = new https.Agent({
-    rejectUnauthorized: false  // SSL 인증서 검증 비활성화
+    rejectUnauthorized: false
   });
 
   try {
-    // 리디렉션 최대 5회 허용
     let response = await axios.get(apiUrl, {
       httpsAgent: agent,
-      maxRedirects: 5
+      maxRedirects: 5 // 리디렉션 최대 횟수를 설정
     });
 
-    // 리디렉션이 발생한 경우 로그 출력
-    if (response.status === 302) {
+    while (response.status === 302 && response.headers.location) {
       console.log(`Redirected to: ${response.headers.location}`);
+      response = await axios.get(response.headers.location, {
+        httpsAgent: agent,
+        maxRedirects: 0 // 추가 리디렉션 비활성화
+      });
+    }
+
+    if (response.status !== 200) {
+      throw new Error(`API responded with status ${response.status}`);
     }
 
     res.status(200).json(response.data);
