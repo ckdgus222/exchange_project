@@ -9,9 +9,8 @@ export default async function handler(req, res) {
   }
 
   const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
-
   const agent = new https.Agent({
-    rejectUnauthorized: false
+    rejectUnauthorized: true
   });
 
   try {
@@ -20,12 +19,20 @@ export default async function handler(req, res) {
       maxRedirects: 5 // 리디렉션 최대 횟수를 설정
     });
 
+    // 리디렉션 추적을 위한 카운터
+    let redirectCount = 0;
+    const maxRedirects = 5; // 최대 리디렉션 횟수
+
     while (response.status === 302 && response.headers.location) {
+      if (redirectCount >= maxRedirects) {
+        throw new Error('Too many redirects');
+      }
       console.log(`Redirected to: ${response.headers.location}`);
       response = await axios.get(response.headers.location, {
         httpsAgent: agent,
         maxRedirects: 0 // 추가 리디렉션 비활성화
       });
+      redirectCount++;
     }
 
     if (response.status !== 200) {

@@ -2,22 +2,16 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import https from 'https';
-
-const agent = new https.Agent({
-  rejectUnauthorized: false  // SSL 인증서 검증 비활성화
-});
 
 export default defineConfig({
   plugins: [react(), svgr(), tsconfigPaths()],
   server: {
     proxy: {
-      '/api': {
-        target: 'https://www.koreaexim.go.kr',
+      '/api/proxy': {  // 더 명확한 경로 매칭
+        target: 'https://www.koreaexim.go.kr/site/program/financial/exchangeJSON',
         changeOrigin: true,
-        secure: false,  // SSL 인증서 검증 비활성화
-        rewrite: path => '/site/program/financial/exchangeJSON' + path.replace(/^\/api\/proxy/, ''),
-        agent,  // HTTPS 에이전트 추가
+        secure: false,
+        pathRewrite: { '^/api/proxy': '' },  // pathRewrite 옵션 사용
       },
     },
   },
