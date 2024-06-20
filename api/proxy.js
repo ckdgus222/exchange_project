@@ -1,37 +1,37 @@
-import axios from 'axios';
-import https from 'https';
+import axios from "axios";
+import https from "https";
+import { URL } from 'url'; 
+
+
+const axiosInstance = axios.create({
+  httpsAgent: new https.Agent({
+    rejectUnauthorized: false // 
+  }),
+  maxRedirects: 0 
+});
 
 export default async function handler(req, res) {
   const { authkey, searchdate, data } = req.query;
 
   if (!authkey || !searchdate || !data) {
-    return res.status(400).json({ message: 'Missing required query parameters.' });
+    return res.status(400).json({ message: "Missing required query parameters." });
   }
 
   const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
-  const agent = new https.Agent({
-    rejectUnauthorized: false
-  });
-
   try {
-    let response = await axios.get(apiUrl, {
-      httpsAgent: agent,
-      maxRedirects: 0 // 리디렉션 자동 처리 비활성화
-    });
+    let response = await axiosInstance.get(apiUrl);
+    const visitedUrls = new Set([apiUrl]); 
 
-    const visitedUrls = new Set([apiUrl]); // 방문한 URL 기록
 
     while (response.status === 302 && response.headers.location) {
-      const location = response.headers.location;
+      const location = new URL(response.headers.location, apiUrl).href; 
+
       if (visitedUrls.has(location)) {
-        throw new Error('Detected redirect loop'); // 무한 리디렉션 방지
+        throw new Error("Detected redirect loop"); 
       }
 
       visitedUrls.add(location);
-      response = await axios.get(location, {
-        httpsAgent: agent,
-        maxRedirects: 0
-      });
+      response = await axiosInstance.get(location);
     }
 
     if (response.status !== 200) {
@@ -40,7 +40,12 @@ export default async function handler(req, res) {
 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).json({ message: 'Unable to fetch data', error: error.message });
+    console.error("Error fetching data:", error);
+    if (error.response) {
+      res.status(error.response.status).json({ message: "Error from external API", details: error.response.data });
+    } else {
+      res.status(500).json({ message: "Unable to fetch data", error: error.message });
+    }
   }
 }
+
