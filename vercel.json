@@ -3,11 +3,8 @@
   "routes": [
     {
       "src": "/api/proxy(.*)",
-      "dest": "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON$1",
-      "methods": ["GET"],
-      "headers": {
-        "x-forwarded-host": "www.koreaexim.go.kr"
-      }
+      "dest": "/api/proxy.js$1",
+      "methods": ["GET"]
     },
     {
       "handle": "filesystem"
@@ -16,4 +13,5 @@
       "src": "/.*",
       "dest": "/index.html"
     }
-  ]}
+  ]
+}

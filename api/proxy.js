@@ -2,7 +2,7 @@ import axios from 'axios';
 import https from 'https';
 
 const agent = new https.Agent({
-  rejectUnauthorized: false // WARNING: This makes your application vulnerable to man-in-the-middle attacks
+  rejectUnauthorized: true // 배포 환경에서는 이 옵션을 true로 설정하여 보안을 강화
 });
 
 export default async function handler(req, res) {
@@ -15,9 +15,14 @@ export default async function handler(req, res) {
 
   try {
     const response = await axios.get(apiUrl, { httpsAgent: agent });
-    res.status(200).json(response.data);
+    if (response.status === 200) {
+      res.status(200).json(response.data);
+    } else {
+      console.error("Non-200 response: ", response.status);
+      res.status(response.status).json({ message: "Bad response from API", details: response.data });
+    }
   } catch (error) {
     console.error("Error fetching data:", error);
-    res.status(500).json({ message: "Unable to fetch data", error: error.message });
+    res.status(502).json({ message: "Unable to fetch data", error: error.toString() });
   }
 }
