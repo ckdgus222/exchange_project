@@ -1,8 +1,13 @@
 {
-  "rewrites": [
+  "version": 2,
+  "routes": [
     {
-      "source": "/api/proxy",
-      "destination": "/api/redirects"
-    }
+      "src": "/api/proxy(.*)",
+      "dest": "/api/proxy.js$1",
+      "methods": ["GET"]
+    },
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/index.html" }
   ]
 }
+
