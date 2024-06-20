@@ -1,47 +1,39 @@
-import express from 'express';
 import axios from 'axios';
 import https from 'https';
 
-const app = express();
-
-// HTTPS 에이전트 생성
 const httpsAgent = new https.Agent({
-  rejectUnauthorized: false  // SSL 인증서 검증 비활성화 (운영 환경에서는 적절한 인증서를 사용하시기 바랍니다)
+  rejectUnauthorized: true  // SSL 인증서 검증을 강제합니다 (보안을 위해 false에서 true로 변경).
 });
 
-app.get('/api/proxy', async (req, res) => {
-  const { authkey, searchdate, data } = req.query;
-  if (!authkey || !searchdate || !data) {
-    return res.status(400).json({ message: 'Missing required query parameters.' });
-  }
+// API URL을 동적으로 생성하는 함수
+function createApiUrl(authkey, searchdate, data) {
+  return `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
+}
 
-  const apiUrl = `https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${authkey}&searchdate=${searchdate}&data=${data}`;
-
+// Axios 요청을 수행하는 함수
+async function fetchData(authkey, searchdate, data) {
   try {
-    let response = await axios.get(apiUrl, { httpsAgent });
-    let redirectCount = 0; // 리디렉션 카운트를 추적합니다.
+    const apiUrl = createApiUrl(authkey, searchdate, data);
+    let response = await axios.get(apiUrl, { httpsAgent, maxRedirects: 5 });  // 리디렉션 최대 횟수를 제한
 
-    while (response.status === 302 && response.headers.location && redirectCount < 5) { // 최대 리디렉션 횟수를 5로 제한
-      const location = response.headers.location;
-      if (location === apiUrl || redirectCount >= 5) { // 같은 URL로의 리디렉션 또는 최대 리디렉션 횟수 초과시 오류 처리
+    // 리디렉션을 추적하고 무한 루프를 방지
+    const visited = new Set();
+    while (response.status === 302 && response.headers.location) {
+      if (visited.has(response.headers.location) || visited.size > 5) {
         throw new Error('Too many redirects or redirect loop detected');
       }
-      console.log('Redirecting to:', location);
-      response = await axios.get(location, { httpsAgent, maxRedirects: 0 });
-      redirectCount++; // 리디렉션 횟수 증가
+      visited.add(response.headers.location);
+      response = await axios.get(response.headers.location, { httpsAgent, maxRedirects: 0 });
     }
 
-    if (response.status !== 200) {
-      throw new Error(`API responded with status ${response.status}: ${response.statusText}`);
-    }
-
-    res.status(200).json(response.data);
+    return response.data;
   } catch (error) {
-    console.error('Error calling external API:', error);
-    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    console.error('Error during API call:', error.message);
+    throw error;  // 에러를 다시 던져 호출자가 처리할 수 있도록 합니다.
   }
-});
+}
 
-app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
-});
+// 예를 들어, 함수 사용 방법
+fetchData('your_auth_key', '20240503', 'AP01')
+  .then(data => console.log('API Data:', data))
+  .catch(error => console.error('API Error:', error));
