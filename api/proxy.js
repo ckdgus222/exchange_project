@@ -16,19 +16,19 @@ export default async function handler(req, res) {
   try {
     let response = await axios.get(apiUrl, {
       httpsAgent: agent,
-      maxRedirects: 0 
+      maxRedirects: 0 // 리디렉션 자동 처리 비활성화
     });
 
-    const visitedUrls = new Set();
-    visitedUrls.add(apiUrl);
+    const visitedUrls = new Set([apiUrl]); // 방문한 URL 기록
 
     while (response.status === 302 && response.headers.location) {
-      if (visitedUrls.has(response.headers.location) || response.headers.location === apiUrl) {
-        throw new Error('Detected redirect loop');
+      const location = response.headers.location;
+      if (visitedUrls.has(location)) {
+        throw new Error('Detected redirect loop'); // 무한 리디렉션 방지
       }
 
-      visitedUrls.add(response.headers.location);
-      response = await axios.get(response.headers.location, {
+      visitedUrls.add(location);
+      response = await axios.get(location, {
         httpsAgent: agent,
         maxRedirects: 0
       });
